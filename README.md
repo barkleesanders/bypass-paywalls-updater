@@ -12,6 +12,23 @@ The script checks the official download source for the "Bypass Paywalls Chrome C
 
 Don't worry if you're not a tech expert. Just follow these steps carefully.
 
+### Quick Start for macOS Users (One-Line Command)
+
+If you're on a Mac, you can get started with just one line of code in your Terminal! This command will download the script, install what it needs, and run it for the first time.
+
+1.  Open your "Terminal" application (you can find it in Applications > Utilities).
+2.  Copy and paste the entire line below into the Terminal and press Enter:
+
+    ```bash
+    cd ~ && git clone https://github.com/barkleesanders/bypass-paywalls-updater.git && cd bypass-paywalls-updater && python3 -m pip install requests --user --break-system-packages && python3 update_bypass_paywalls.py
+    ```
+
+    The script will then check for updates and download the extension to your "Downloads" folder if a new version is available. After it finishes, proceed to **Step 4: Install the Extension in Chrome (Manual Step)** below.
+
+    If you encounter any issues, please refer to the "Troubleshooting" section.
+
+### Step 1: Download the Script
+
 ### Step 1: Download the Script
 
 1.  Go to the script's page on GitHub: [https://github.com/barkleesanders/bypass-paywalls-updater](https://github.com/barkleesanders/bypass-paywalls-updater)
