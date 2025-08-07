@@ -29,8 +29,6 @@ If you're on a Mac, you can get started with just one line of code in your Termi
 
 ### Step 1: Download the Script
 
-### Step 1: Download the Script
-
 1.  Go to the script's page on GitHub: [https://github.com/barkleesanders/bypass-paywalls-updater](https://github.com/barkleesanders/bypass-paywalls-updater)
 2.  Click on the green "Code" button.
 3.  Select "Download ZIP".
