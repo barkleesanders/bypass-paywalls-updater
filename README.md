@@ -1,12 +1,29 @@
 # Bypass Paywalls Chrome Clean Updater
 
-This repository contains a simple Python script to help you keep your "Bypass Paywalls Chrome Clean" extension updated automatically. 
+This repository contains a simple Python script to help you keep your "Bypass Paywalls Chrome Clean" extension updated automatically.
 
 **Important:** Due to Chrome's security policies, this script can **download** the latest version for you, but you will still need to **manually install** it into your Chrome browser.
 
 ## How it Works
 
-The script checks the official download source for the "Bypass Paywalls Chrome Clean" extension. It looks for changes in the file size, which usually means a new version has been released. If a new version is found, it automatically downloads the `.zip` file to your computer's "Downloads" folder.
+The script checks the official download source for the "Bypass Paywalls Chrome Clean" extension. It detects changes using HTTP headers in this priority order:
+
+1. **ETag** -- the most reliable change indicator
+2. **Last-Modified** -- timestamp-based detection
+3. **Content-Length** -- file size fallback
+
+When a change is detected, the script downloads the `.zip` file, verifies it is a valid ZIP archive, and saves it to your Downloads folder. The previous check state is stored as a JSON file so the script knows what has changed since last run.
+
+## Features
+
+- **Reliable change detection** via ETag and Last-Modified headers (Content-Length fallback)
+- **Download integrity verification** -- confirms the file is a valid ZIP before saving
+- **Automatic retry** with exponential backoff on network failures
+- **Structured logging** with timestamps (useful for cron job output)
+- **Desktop notifications** on macOS when a new version is downloaded
+- **CLI options** for `--force`, `--dry-run`, `--download-dir`, and more
+- **Environment variable configuration** for cron-friendly setups
+- **Legacy state migration** -- automatically upgrades from the old format
 
 ## Getting Started (For Everyone!)
 
@@ -82,22 +99,48 @@ If you're on macOS or Linux, you can set up your computer to run this script aut
 
 1.  Open your "Terminal" application.
 2.  Type `crontab -e` and press Enter. This will open a text editor.
-3.  Add the following line to the very end of the file. This will run the script every day at 3:00 AM.
+3.  Add the following line to the very end of the file. This will run the script every day at 3:00 AM with desktop notifications enabled:
     ```
-    0 3 * * * /usr/bin/python3 /Users/barkleesanders/bypass-paywalls-updater/update_bypass_paywalls.py >> /Users/barkleesanders/bypass-paywalls-updater/update_log.log 2>&1
+    0 3 * * * /usr/bin/python3 /path/to/update_bypass_paywalls.py --notify 2>&1
     ```
-    **Important:** Make sure the path to `python3` (`/usr/bin/python3`) and the script (`/Users/barkleesanders/bypass-paywalls-updater/update_bypass_paywalls.py`) are correct for your system. You can find the correct path to `python3` by typing `which python3` in your terminal.
+    **Important:** Replace `/path/to/` with the actual path to the script. You can find the correct path to `python3` by typing `which python3` in your terminal.
 4.  Save and close the file:
     *   If using `nano`: Press `Ctrl + X`, then `Y` to confirm saving, then Enter.
     *   If using `vi`: Press `Esc`, then type `:wq` and press Enter.
 
 Now, your computer will automatically check for updates daily! You'll still need to manually install the extension in Chrome when a new version is downloaded.
 
+## Command-Line Options
+
+```
+python3 update_bypass_paywalls.py [OPTIONS]
+
+Options:
+  --force           Skip change detection and download regardless
+  --dry-run         Check for changes but do not download
+  --download-dir    Directory to save the ZIP (default: ~/Downloads)
+  --state-file      Path to the JSON state file (default: ~/.bpc_updater_state.json)
+  --notify          Send a macOS desktop notification on successful download
+  -v, --verbose     Enable debug-level logging
+```
+
+## Environment Variables
+
+These can be used instead of (or in addition to) command-line options. Command-line options take precedence.
+
+| Variable          | Description                                   | Default                         |
+|-------------------|-----------------------------------------------|---------------------------------|
+| `BPC_DOWNLOAD_DIR`| Directory to save the downloaded ZIP           | `~/Downloads`                   |
+| `BPC_STATE_FILE`  | Path to the JSON state file                    | `~/.bpc_updater_state.json`     |
+| `BPC_NOTIFY`      | Set to `1` to enable macOS desktop notifications | disabled                      |
+
 ## Troubleshooting
 
 *   **"No such file or directory" error when running the script:** Double-check that you are in the correct directory in your Terminal/Command Prompt, and that the script file name is correct.
-*   **Script doesn't download anything:** Run the script manually (`python3 update_bypass_paywalls.py`). Check the output for any error messages. Also, ensure your internet connection is working.
+*   **Script doesn't download anything:** Run the script with `--verbose` for detailed output: `python3 update_bypass_paywalls.py --verbose`. Check the output for any error messages. Also, ensure your internet connection is working.
 *   **Chrome won't install the .zip file:** Make sure "Developer mode" is enabled on your `chrome://extensions` page. Also, ensure you are dragging the `.zip` file directly onto the extensions page, not just into the Chrome window.
+*   **Network errors:** The script automatically retries up to 3 times with increasing delays. If it still fails, check your internet connection and try again later.
+*   **"Corrupt state file" warning:** The script will automatically start fresh. This can happen after a manual edit of the state file. No action needed.
 
 ## License
 
