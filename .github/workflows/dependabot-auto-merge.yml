@@ -18,7 +18,7 @@ jobs:
       # Never check out or execute PR code in this privileged job.
       - name: Dependabot metadata
         id: metadata
-        uses: dependabot/fetch-metadata@25dd0e34f4fe68f24cc83900b1fe3fe149efef98 # v3.0.0
+        uses: dependabot/fetch-metadata@25dd0e34f4fe68f24cc83900b1fe3fe149efef98 # v3 (Node 24)
         with:
           github-token: ${{ github.token }}
 
