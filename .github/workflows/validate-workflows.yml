@@ -1,0 +1,21 @@
+name: Validate workflows
+
+on:
+  pull_request:
+  push:
+    branches: ['master']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  actionlint:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - name: Validate every workflow
+        run: go run github.com/rhysd/actionlint/cmd/actionlint@v1.7.12 -color
